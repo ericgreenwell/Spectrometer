@@ -2,6 +2,7 @@
 
 import serial
 from RPI.GPIO import GPIO
+import matplotlib.pyplot as plt
 
 SPEC_TRG   =      5
 SPEC_ST    =      6
@@ -9,6 +10,32 @@ SPEC_CLK   =      13
 SPEC_VIDEO =      19
 WHITE_LED  =      26
 LASER_404  =      22
+
+#SPI Configuration
+"""
+CLK  = 18
+MISO = 23
+MOSI = 24
+CS   = 25
+mcp = Adafruit_MCP3008.MCP3008(clk=CLK, cs=CS, miso=MISO, mosi=MOSI)
+
+USE:
+values[i] = mcp.read_adc(i)
+
+"""
+
+
+
+"""
+sudo apt-get update
+sudo apt-get install build-essential python-dev python-smbus git
+cd ~
+git clone https://github.com/adafruit/Adafruit_Python_MCP3008.git
+cd Adafruit_Python_MCP3008
+sudo python setup.py install
+"""
+
+SPEC_CHANNELS = 288
 
 GPIO.setmode(GPIO.BCM)
 
@@ -56,9 +83,9 @@ def readSpectrometer():
   
   
   # Read from SPEC Video
-  
+  data = []
   for i in range(SPEC_CHANNELS):
-          data[i] = # analog read a channel
+          data[i] = mcp.read_adc(1) # analog read a channel 1 of ADC
           
           GPIO.output(SPEC_CLK, GPIO.HIGH)
           time.sleep(delayTime)
@@ -71,6 +98,18 @@ def readSpectrometer():
   
   # Print Data
   
+  # Plot Data
+  def plot:
+    plt.plot(data)
+    plt.ylabel('Intensity')
+    plt.xlabel('Wavelength')
+    plt.show()
+  
+  
+  
+  if __name__ == "__main__":
+    readSpectrometer()
+    plot()
         
         
         

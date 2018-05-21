@@ -1,0 +1,13 @@
+gpio
+	step_ud: tbd
+	step_lr: tbd
+	step_focus: tbd
+	dir_ud: tbd
+	dir_lr: tbd
+	dir_focus: tbd
+	wait_time: tbd
+	set_warn: false
+app
+	host: tbd
+	port: tbd
+	debug: tbd

@@ -1,63 +1,64 @@
+#!usr/bin/env python
+
+from flask import Flask, render_template, Response,flash,request, redirect, url_for, make_response
+import motors
 import os
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+import RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM) #set up GPIO
+GPIO.setwarnings(False)
+
+# Raspberry pi camera module (reqires picamera package)
+from camera_pi import Camera
+
+app = Flask(__name__) #set up flask server
+app.secret_key=os.urandom(24)
+
+motor = motors.move() #create motor object
 
 
-app = Flask(__name__)
-
-app.config.from_object(__name__)
-
-
-
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'flask_laser.db'),
-    SECRET_KEY= 'dev key',
-    USERNAME='tetracore',
-    PASSWORD='agate'
-))
-
-app.config.from_envvar('flask_laser_SETTINGS', silent=True) 
-
-def connect_db():
-    """Connects to the SQLite database"""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-
-        
-
-@app.cli.command('initdb')
-def init_db_command():
-    init_db()
-    print('Initialized the database.')
-
-
-@app.teardown_appcontext
-def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
-
+############# routes ############
 @app.route('/')
-def start_up():
-    """Fetches database when app starts up so you have access to the data"""
-    db = get_db()
-    cur = db.execute("select * from spectra order by image_path desc")
-    spectra = cur.fetchall()
-    return render_template('index.html', spectra=spectra)
+def index():
+        return render_template('index.html')
 
+@app.route('/video_feed')
+def video_feed():
+        return Response(gen(Camera()),
+                        mimetype = 'multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/AcquireDark', methods=['GET', 'POST'])
-def AcquireDark():
- 
+#Uses methods from motors.py to send commands to the GPIO to operate the motors
+@app.route('/move/<direction>', methods =['POST'])
+def moving(direction):
+	      
+        move = int(direction)
+        if move == 1:
+                motor.tiltUP()
+        elif move == 2:
+                motor.tiltDOWN()
+        elif move == 3:
+                motor.panLEFT()
+        elif move == 4:
+                motor.panRIGHT()
+        elif move == 5:
+                motor.UD_Home() 
+                motor.LR_Home()
+                
+        else:
+                return "false"
+        
+	return "success"
 
-def Acquire():
+############# utils ###########
+def gen(camera):
+        """video streaming function"""
+        while True:
+                frame = camera.get_frame()
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                
+############# main ############
+if __name__ == '__main__':
+        app.run(host='0.0.0.0', port=5000, debug=True, threaded=True) #set up the server in debug mode to the port 5000
 
-
-
-@app.route('/Clear', methods=['GET', 'POST'])
-def Clear():
-
-
-
-@app.route('/autoBio', methods=['GET', 'POST'])
-def autoBio():
+############# EOF ##############

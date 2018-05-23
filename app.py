@@ -1,53 +1,38 @@
 #!usr/bin/env python
 
 from flask import Flask, render_template, Response,flash,request, redirect, url_for, make_response
-import motors
+#import motors
 import os
-import RPi.GPIO as GPIO
+import serial
+import threading
+#import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM) #set up GPIO
-GPIO.setwarnings(False)
-
-# Raspberry pi camera module (reqires picamera package)
-from camera_pi import Camera
 
 app = Flask(__name__) #set up flask server
 app.secret_key=os.urandom(24)
-
-motor = motors.move() #create motor object
-
+spec = serial.Serial('/dev/ttyUSB0',
+              baudrate=115200,
+              bytesize=serial.EIGHTBITS,
+              timeout=0,
+              stopbits=serial.STOPBITS_ONE,
+              parity=serial.PARITY_NONE)
 
 ############# routes ############
 @app.route('/')
 def index():
         return render_template('index.html')
 
-@app.route('/video_feed')
+@app.route('/get_data')
 def video_feed():
         return Response(gen(Camera()),
                         mimetype = 'multipart/x-mixed-replace; boundary=frame')
 
 #Uses methods from motors.py to send commands to the GPIO to operate the motors
-@app.route('/move/<direction>', methods =['POST'])
-def moving(direction):
+
+#@app.route('/move/<direction>', methods =['POST'])
+@app.route('/plot', methods=['POST'])
+def plot():
 	      
-        move = int(direction)
-        if move == 1:
-                motor.tiltUP()
-        elif move == 2:
-                motor.tiltDOWN()
-        elif move == 3:
-                motor.panLEFT()
-        elif move == 4:
-                motor.panRIGHT()
-        elif move == 5:
-                motor.UD_Home() 
-                motor.LR_Home()
-                
-        else:
-                return "false"
-        
-	return "success"
 
 ############# utils ###########
 def gen(camera):

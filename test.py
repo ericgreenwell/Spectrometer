@@ -16,7 +16,7 @@ spec = serial.Serial('/dev/ttyUSB0', baudrate=115200, bytesize=serial.EIGHTBITS,
 plt.ion()
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-ax.title('Spectrometer Output')
+#ax.title('Spectrometer Output')
 
 
 while True:
@@ -41,7 +41,7 @@ while True:
         fig.canvas.draw()
         fig.canvas.flush_events()
 
-        html=mpld3.fig_to_html(fig)
+        #html=mpld3.fig_to_html(fig)
 
 
     ax.cla()

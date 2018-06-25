@@ -32,35 +32,6 @@ spec = serial.Serial('/dev/ttyUSB0',
 #matplotlib.rcParams.update(s)
 
 
-def read_data():
-    spec.flush()
-    line = spec.readline()
-
-    data = []
-
-    if len(line) > 0:
-
-        line = line.split(',')
-        line = list(line)
-
-        del line[-1]
-
-        data = [int(x) for _, x in enumerate(line)]
-        print len(data)
-
-        if len(data) == 288:
-            fig = plt.figure()
-            ax.plot(data, 'r-')
-
-            ax = fig.add_subplot(1, 1, 1)
-            ax.title('Spectrometer Output')
-
-            fig.canvas.draw()
-            output = dumps(mpld3.fig_to_html(fig))
-            # fig.canvas.flush_events()
-
-            return data, output  # , mpld3.fig_to_html(fig)
-
 
 ############# routes ############
 
@@ -88,7 +59,7 @@ def home():
 def query():
     spec.flush()
     line = spec.readline()
-
+    print "in query"
     data = []
 
     if len(line) > 0:
@@ -102,18 +73,18 @@ def query():
         print len(data)
 
         if len(data) == 288:
-            fig, ax = plt.figure()
-            ax.plot(data, 'r-')
+            #fig, ax = plt.subplots()
+            #ax.plot(data, 'r-')
 
-            ax = fig.add_subplot(1, 1, 1)
-            ax.title('Spectrometer Output')
-
-            fig.canvas.draw()
+            #ax = fig.add_subplot(1, 1, 1)
+            #ax.title('Spectrometer Output')
+            #ax.plot(data, 'r-')
+            #fig.canvas.draw()
             #fig.canvas.flush_events()
 
-            return data
+            #return data
 
-    return draw_fig(data)
+            return draw_fig(data)
 
 
 if __name__ == '__main__':

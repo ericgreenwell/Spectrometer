@@ -15,17 +15,11 @@ div #sidebar
   <br/>
   <input type="radio" name="plot_type" value="line" checked>Line</input>
   <br/>
-  <input type="radio" name="plot_type" value="bar" >Bar</input>
-  <br/>
-  <input type="radio" name="plot_type" value="pie" >Pie</input>
-  <br/>
   <input type="radio" name="plot_type" value="scatter" >Scatter</input>
-  <br/>
-  <input type="radio" name="plot_type" value="hist" >Histogram</input>
   <br/>
   <input type="radio" name="plot_type" value="area" >Area</input>
   <br/>
-  <button type="button" id="query">View Plot</button>
+  <button type="button" id="query">Start Plot</button>
   <br/>
 </div>
 <div id="loading-div-background">
@@ -44,10 +38,9 @@ function datetime_to_epoch(datetime)
   return epoch;
 }
 
-$("#query").click(function() {  
+$("#query").click(function() {
 
-  $("#loading-div-background").show();
-  $("#container").hide();
+
   var plot_type = $('input:radio[name=plot_type]:checked').val();
   var qu = {"plot_type":plot_type}
   $.ajax({
@@ -58,8 +51,7 @@ $("#query").click(function() {
     data: JSON.stringify(qu),
     success: function (data) {     
      var graph = $("#container");
-     graph.html(data);   
-     $("#loading-div-background").hide();      
+     graph.html(data);
      $("#container").show();
    },
    dataType: "html"
